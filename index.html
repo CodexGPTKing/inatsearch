@@ -4,23 +4,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="color-scheme" content="light dark">
 <title>iNat Species Finder</title>
 <style>
   :root {
-    --bg: #111;
-    --surface: #1a1a1a;
-    --surface2: #222;
-    --border: #2a2a2a;
-    --border-light: #333;
-    --text: #e0e0e0;
-    --text-dim: #888;
-    --accent: #5cb85c;
-    --accent-dim: #3a7a3a;
-    --accent-strong: #4cae4c;
+    color-scheme: light dark;
+    --bg: #f6f9f7;
+    --surface: #ffffff;
+    --surface2: #eef4f0;
+    --border: #cfddd4;
+    --border-light: #b8cabc;
+    --text: #122017;
+    --text-dim: #4a6254;
+    --accent: #2f8f5b;
+    --accent-dim: #2b7d51;
+    --accent-strong: #236741;
     --danger: #d9534f;
-    --danger-bg: #2a1515;
-    --ok-bg: #142014;
-    --input-bg: #1e1e1e;
+    --danger-bg: #fde9e8;
+    --ok-bg: #e5f4ea;
+    --input-bg: #ffffff;
+    --button-text: #f3fbf7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1210;
+      --surface: #131d18;
+      --surface2: #1b2620;
+      --border: #2b3e34;
+      --border-light: #355145;
+      --text: #e6f1eb;
+      --text-dim: #a6bcaf;
+      --accent: #63c08a;
+      --accent-dim: #4ea976;
+      --accent-strong: #7bd7a1;
+      --danger-bg: #311a1a;
+      --ok-bg: #15261d;
+      --input-bg: #111a16;
+      --button-text: #08110c;
+    }
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { font-size: 15px; }
@@ -35,25 +56,25 @@
 /* ── Header ── */
 header {
 padding: 0.9rem 1rem 0.55rem;
-border-bottom: 1px solid var(–border);
+border-bottom: 1px solid var(--border);
 position: sticky; top: 0;
-background: var(–bg);
+background: var(--bg);
 z-index: 10;
 }
-header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(–accent); }
-header p { font-size: 0.72rem; color: var(–text-dim); margin-top: 0.1rem; }
+header h1 { font-size: 1.1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--accent); }
+header p { font-size: 0.72rem; color: var(--text-dim); margin-top: 0.1rem; }
 
 /* ── Form ── */
 .form-wrap { padding: 0.75rem 1rem; }
 .row { display: flex; gap: 0.5rem; margin-bottom: 0.5rem; }
 .row > * { flex: 1; min-width: 0; }
-label { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(–text-dim); margin-bottom: 0.2rem; }
-input[type=“number”], select {
-width: 100%; background: var(–input-bg); border: 1px solid var(–border);
-color: var(–text); padding: 0.55rem 0.5rem; border-radius: 6px; font-size: 0.95rem;
+label { display: block; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-dim); margin-bottom: 0.2rem; }
+input[type="number"], input[type="text"], select {
+width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+color: var(--text); padding: 0.55rem 0.5rem; border-radius: 6px; font-size: 0.95rem;
 -webkit-appearance: none; appearance: none; font-family: inherit;
 }
-input:focus, select:focus { outline: none; border-color: var(–accent-dim); }
+input:focus, select:focus { outline: none; border-color: var(--accent-dim); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent); }
 select { padding-right: 1.5rem; }
 
 .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; }
@@ -61,27 +82,27 @@ select { padding-right: 1.5rem; }
 .toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle .slider {
-position: absolute; inset: 0; background: var(–border); border-radius: 12px;
+position: absolute; inset: 0; background: var(--border); border-radius: 12px;
 cursor: pointer; transition: background 0.2s;
 }
 .toggle .slider::after {
-content: ‘’; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
-background: var(–text); border-radius: 50%; transition: transform 0.2s;
+content: ''; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px;
+background: var(--text); border-radius: 50%; transition: transform 0.2s;
 }
-.toggle input:checked + .slider { background: var(–accent); }
+.toggle input:checked + .slider { background: var(--accent); }
 .toggle input:checked + .slider::after { transform: translateX(20px); }
 
 .btn-primary {
 display: block; width: 100%; padding: 0.7rem; margin-top: 0.5rem;
-background: var(–accent); color: #111; border: none; border-radius: 6px;
+background: var(--accent); color: var(--button-text); border: 1px solid transparent; border-radius: 6px;
 font-size: 0.95rem; font-weight: 700; cursor: pointer; font-family: inherit;
-transition: opacity 0.15s;
+transition: opacity 0.15s, background 0.15s;
 }
 .btn-primary:active { opacity: 0.8; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-cancel {
 display: none; width: 100%; padding: 0.55rem; margin-top: 0.3rem;
-background: transparent; color: var(–danger); border: 1px solid var(–danger);
+background: transparent; color: var(--danger); border: 1px solid var(--danger);
 border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-family: inherit;
 }
 .btn-cancel.active { display: block; }
@@ -89,75 +110,76 @@ border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-family: inherit;
 /* ── GPS ── */
 .gps-btn {
 display: flex; align-items: center; justify-content: center; width: 100%;
-padding: 0.5rem; background: var(–input-bg); border: 1px solid var(–border);
-color: var(–text-dim); border-radius: 6px; font-size: 0.8rem; cursor: pointer;
+padding: 0.5rem; background: var(--input-bg); border: 1px solid var(--border);
+color: var(--text-dim); border-radius: 6px; font-size: 0.8rem; cursor: pointer;
 margin-bottom: 0.5rem; gap: 0.3rem; font-family: inherit;
 }
-.gps-btn:active { border-color: var(–accent-dim); }
+.gps-btn:active { border-color: var(--accent-dim); }
 .gps-btn svg { width: 14px; height: 14px; fill: currentColor; }
 
 /* ── Status / Error / Summary ── */
 .msg { padding: 0.5rem 1rem; font-size: 0.8rem; min-height: 0; }
 .msg:empty { display: none; }
-.msg-status { color: var(–text-dim); }
-.msg-error { color: var(–danger); background: var(–danger-bg); border-bottom: 1px solid #3a2020; }
-.msg-ok { color: var(–accent); }
+.msg-status { color: var(--text-dim); }
+.msg-error { color: var(--danger); background: var(--danger-bg); border-bottom: 1px solid #3a2020; }
+.msg-ok { color: var(--accent); }
 
 /* ── Progress ── */
-.progress-wrap { height: 3px; background: var(–border); display: none; }
+.progress-wrap { height: 3px; background: var(--border); display: none; }
 .progress-wrap.active { display: block; }
-.progress-bar { height: 100%; background: var(–accent); width: 0%; transition: width 0.3s; }
+.progress-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
 
 /* ── Summary ── */
 .summary {
-display: none; padding: 0.6rem 1rem; font-size: 0.8rem; color: var(–text-dim);
-border-bottom: 1px solid var(–border); background: var(–surface);
+display: none; padding: 0.6rem 1rem; font-size: 0.8rem; color: var(--text-dim);
+border-bottom: 1px solid var(--border); background: var(--surface);
 }
 .summary.active { display: block; }
-.summary strong { color: var(–text); }
+.summary strong { color: var(--text); }
 .summary .summary-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.3rem; }
 .summary .summary-meta { margin-top: 0.3rem; font-size: 0.72rem; }
-.summary a { color: var(–accent); text-decoration: none; }
+.summary a { color: var(--accent); text-decoration: none; }
 .summary a:hover { text-decoration: underline; }
 
 /* ── Controls ── */
-.controls { display: none; padding: 0.5rem 1rem; gap: 0.5rem; border-bottom: 1px solid var(–border); }
+.controls { display: none; padding: 0.5rem 1rem; gap: 0.5rem; border-bottom: 1px solid var(--border); }
 .controls.active { display: flex; flex-wrap: wrap; }
 .controls select { flex: 1; min-width: 120px; padding: 0.4rem 0.5rem; font-size: 0.8rem; }
-.controls input[type=“text”] {
+.controls input[type="text"] {
 flex: 2; min-width: 100px; padding: 0.4rem 0.5rem; font-size: 0.8rem;
-background: var(–input-bg); border: 1px solid var(–border); color: var(–text);
+background: var(--input-bg); border: 1px solid var(--border); color: var(--text);
 border-radius: 6px; font-family: inherit;
 }
-.controls input[type=“text”]:focus { outline: none; border-color: var(–accent-dim); }
+.controls input[type="text"]:focus { outline: none; border-color: var(--accent-dim); }
 
 .toolbar-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 .btn-sm {
-background: var(–surface); border: 1px solid var(–border); color: var(–text-dim);
+background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
 padding: 0.35rem 0.6rem; border-radius: 5px; font-size: 0.72rem; cursor: pointer;
 font-family: inherit; white-space: nowrap;
 }
-.btn-sm:active { border-color: var(–accent-dim); }
+.btn-sm:active { border-color: var(--accent-dim); }
+input::placeholder { color: color-mix(in srgb, var(--text-dim) 70%, transparent); }
 
 /* ── Results ── */
 #results { list-style: none; }
 #results li {
 display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 1rem;
-border-bottom: 1px solid var(–border); min-height: 50px;
+border-bottom: 1px solid var(--border); min-height: 50px;
 }
 #results li a { display: contents; color: inherit; text-decoration: none; }
 .thumb {
 width: 38px; height: 38px; border-radius: 5px; object-fit: cover;
-flex-shrink: 0; background: var(–surface);
+flex-shrink: 0; background: var(--surface);
 }
 .info { flex: 1; min-width: 0; overflow: hidden; }
 .common-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sci-name { font-style: italic; font-size: 0.75rem; color: var(–text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.meta-right { text-align: right; flex-shrink: 0; font-size: 0.72rem; color: var(–text-dim); line-height: 1.4; }
-.meta-right .count { font-weight: 700; color: var(–text); font-size: 0.85rem; }
+.sci-name { font-style: italic; font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.meta-right { text-align: right; flex-shrink: 0; font-size: 0.72rem; color: var(--text-dim); line-height: 1.4; }
+.meta-right .count { font-weight: 700; color: var(--text); font-size: 0.85rem; }
 .badge {
 display: inline-block; font-size: 0.58rem; padding: 0.08rem 0.3rem; border-radius: 3px;
-background: var(–surface); border: 1px solid var(–border); text-transform: uppercase;
+background: var(--surface); border: 1px solid var(--border); text-transform: uppercase;
 letter-spacing: 0.04em;
 }
 
@@ -165,13 +187,13 @@ letter-spacing: 0.04em;
 .load-more { display: none; text-align: center; padding: 0.7rem; }
 .load-more.active { display: block; }
 .load-more button {
-background: var(–surface); border: 1px solid var(–border); color: var(–accent);
+background: var(--surface); border: 1px solid var(--border); color: var(--accent);
 padding: 0.5rem 1.5rem; border-radius: 6px; font-size: 0.82rem; cursor: pointer;
 font-family: inherit;
 }
 
 /* ── Empty state ── */
-.empty-state { display: none; padding: 2rem 1rem; text-align: center; color: var(–text-dim); font-size: 0.85rem; }
+.empty-state { display: none; padding: 2rem 1rem; text-align: center; color: var(--text-dim); font-size: 0.85rem; }
 .empty-state.active { display: block; }
 
 /* ── No-photo placeholder SVG data URI ── */
@@ -213,6 +235,12 @@ font-family: inherit;
     <div><label for="startYear">Start year</label><input type="number" id="startYear" min="1900" step="1"></div>
     <div><label for="endYear">End year</label><input type="number" id="endYear" min="1900" step="1"></div>
   </div>
+  <div class="row">
+    <div>
+      <label for="nameContains">Name contains</label>
+      <input type="text" id="nameContains" placeholder="e.g. dove">
+    </div>
+  </div>
 
   <div class="row">
     <div style="display:flex;align-items:center;">
@@ -252,9 +280,9 @@ font-family: inherit;
   <select id="sortBy">
     <option value="count-desc">Most observed</option>
     <option value="count-asc">Least observed</option>
-    <option value="name-asc">Common name A–Z</option>
-    <option value="name-desc">Common name Z–A</option>
-    <option value="sci-asc">Scientific name A–Z</option>
+    <option value="name-asc">Common name A-Z</option>
+    <option value="name-desc">Common name Z-A</option>
+    <option value="sci-asc">Scientific name A-Z</option>
   </select>
   <input type="text" id="filterText" placeholder="Filter by name…">
   <div class="toolbar-btns">
@@ -293,7 +321,7 @@ font-family: inherit;
   var el = {
     lat: $('lat'), lng: $('lng'), radius: $('radius'), quality: $('quality'),
     startYear: $('startYear'), endYear: $('endYear'), showPlants: $('showPlants'),
-    showCaptive: $('showCaptive'),
+    showCaptive: $('showCaptive'), nameContains: $('nameContains'),
     searchBtn: $('searchBtn'), cancelBtn: $('cancelBtn'), gpsBtn: $('gpsBtn'),
     statusMsg: $('statusMsg'), errorMsg: $('errorMsg'),
     progressWrap: $('progressWrap'), progressBar: $('progressBar'),
@@ -376,7 +404,8 @@ font-family: inherit;
 
     return { lat: lat, lng: lng, radius: radius, startYear: sy, endYear: ey,
              plants: el.showPlants.checked, captive: el.showCaptive.checked,
-             quality: el.quality.value };
+             quality: el.quality.value,
+             nameFilter: (el.nameContains.value || '').toLowerCase().trim() };
   }
 
   /* ── Build URL params ── */
@@ -516,7 +545,9 @@ font-family: inherit;
     for (var i = 0; i < allSpecies.length; i++) totalObs += allSpecies[i].count;
     el.totalSpecies.textContent = allSpecies.length.toLocaleString();
     el.totalObs.textContent = totalObs.toLocaleString();
-    el.summaryDetail.textContent = v.startYear + '–' + v.endYear + ' · ' + v.radius + ' km · (' + v.lat + ', ' + v.lng + ')' + (!v.plants ? ' · no plants' : '');
+    var summary = v.startYear + '-' + v.endYear + ' · ' + v.radius + ' km · (' + v.lat + ', ' + v.lng + ')' + (!v.plants ? ' · no plants' : '');
+    if (v.nameFilter) summary += ' · name contains "' + v.nameFilter + '"';
+    el.summaryDetail.textContent = summary;
     el.inatLink.href = buildExploreUrl(v);
     el.summary.classList.add('active');
     el.controls.classList.add('active');
@@ -525,14 +556,16 @@ font-family: inherit;
   /* ── Sort & Filter ── */
   function applySortAndFilter() {
     var sort = el.sortBy.value;
-    var filt = (el.filterText.value || '').toLowerCase().trim();
+    var toolbarFilter = (el.filterText.value || '').toLowerCase().trim();
+    var primaryFilter = (searchValues && searchValues.nameFilter) ? searchValues.nameFilter : '';
 
     displayList = allSpecies;
-    if (filt) {
+    if (primaryFilter || toolbarFilter) {
       displayList = allSpecies.filter(function (s) {
-        return s.common.toLowerCase().indexOf(filt) !== -1 ||
-               s.name.toLowerCase().indexOf(filt) !== -1 ||
-               s.iconic.toLowerCase().indexOf(filt) !== -1;
+        var haystack = [s.common, s.name, s.iconic].join(' ').toLowerCase();
+        var matchesPrimary = !primaryFilter || haystack.indexOf(primaryFilter) !== -1;
+        var matchesToolbar = !toolbarFilter || haystack.indexOf(toolbarFilter) !== -1;
+        return matchesPrimary && matchesToolbar;
       });
     }
     displayList = displayList.slice();
@@ -554,6 +587,12 @@ font-family: inherit;
   el.sortBy.addEventListener('change', applySortAndFilter);
   var filterTimer;
   el.filterText.addEventListener('input', function () {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(applySortAndFilter, 200);
+  });
+  el.nameContains.addEventListener('input', function () {
+    if (!searchValues) return;
+    searchValues.nameFilter = (el.nameContains.value || '').toLowerCase().trim();
     clearTimeout(filterTimer);
     filterTimer = setTimeout(applySortAndFilter, 200);
   });
