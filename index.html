@@ -77,9 +77,40 @@ color: var(--text); padding: 0.55rem 0.5rem; border-radius: 6px; font-size: 0.95
 input:focus, select:focus { outline: none; border-color: var(--accent-dim); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 24%, transparent); }
 select { padding-right: 1.5rem; }
 
-.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; }
-.toggle-row span { font-size: 0.85rem; }
-.toggle { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-grid {
+display: grid;
+grid-template-columns: 1fr;
+gap: 0.5rem;
+}
+.toggle-card {
+background: var(--surface);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 0.65rem 0.75rem;
+}
+.toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; }
+.toggle-copy { flex: 1; min-width: 0; }
+.toggle-title {
+display: block;
+font-size: 0.88rem;
+font-weight: 600;
+line-height: 1.2;
+color: var(--text);
+}
+.toggle-help {
+display: block;
+margin-top: 0.16rem;
+font-size: 0.74rem;
+line-height: 1.35;
+color: var(--text-dim);
+}
+.toggle {
+position: relative;
+width: 44px;
+height: 24px;
+flex-shrink: 0;
+margin-bottom: 0;
+}
 .toggle input { opacity: 0; width: 0; height: 0; }
 .toggle .slider {
 position: absolute; inset: 0; background: var(--border); border-radius: 12px;
@@ -100,12 +131,99 @@ transition: opacity 0.15s, background 0.15s;
 }
 .btn-primary:active { opacity: 0.8; }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-link {
+display: inline-flex;
+align-items: center;
+background: transparent;
+border: 0;
+color: var(--accent);
+padding: 0.2rem 0;
+min-height: 44px;
+font-size: 0.78rem;
+font-weight: 700;
+cursor: pointer;
+font-family: inherit;
+}
+.btn-link:active { opacity: 0.8; }
 .btn-cancel {
 display: none; width: 100%; padding: 0.55rem; margin-top: 0.3rem;
 background: transparent; color: var(--danger); border: 1px solid var(--danger);
 border-radius: 6px; font-size: 0.85rem; cursor: pointer; font-family: inherit;
 }
 .btn-cancel.active { display: block; }
+
+.species-type-panel {
+margin-top: 0.75rem;
+padding-top: 0.75rem;
+border-top: 1px solid var(--border);
+}
+.species-type-panel[hidden] { display: none; }
+.species-type-panel-head {
+display: flex;
+flex-wrap: wrap;
+align-items: flex-start;
+justify-content: space-between;
+gap: 0.75rem;
+}
+.species-type-panel-title {
+font-size: 0.82rem;
+font-weight: 700;
+color: var(--text);
+}
+.species-type-panel-help {
+margin-top: 0.18rem;
+font-size: 0.74rem;
+line-height: 1.4;
+color: var(--text-dim);
+}
+.species-type-summary {
+margin: 0.55rem 0;
+font-size: 0.74rem;
+color: var(--text-dim);
+}
+.species-type-summary.invalid { color: var(--danger); }
+.species-type-list {
+display: grid;
+grid-template-columns: 1fr;
+gap: 0.5rem;
+}
+.species-type-option {
+display: flex;
+align-items: flex-start;
+gap: 0.7rem;
+min-height: 44px;
+padding: 0.7rem;
+background: var(--surface2);
+border: 1px solid var(--border);
+border-radius: 8px;
+cursor: pointer;
+margin-bottom: 0;
+text-transform: none;
+letter-spacing: normal;
+color: inherit;
+}
+.species-type-option input {
+width: 1.1rem;
+height: 1.1rem;
+margin-top: 0.1rem;
+accent-color: var(--accent);
+flex-shrink: 0;
+}
+.species-type-option-text { min-width: 0; }
+.species-type-option-label {
+display: block;
+font-size: 0.86rem;
+font-weight: 600;
+line-height: 1.25;
+color: var(--text);
+}
+.species-type-option-meta {
+display: block;
+margin-top: 0.12rem;
+font-size: 0.72rem;
+line-height: 1.35;
+color: var(--text-dim);
+}
 
 /* ── GPS ── */
 .gps-btn {
@@ -198,6 +316,11 @@ font-family: inherit;
 
 /* ── No-photo placeholder SVG data URI ── */
 .no-photo { opacity: 0.4; }
+
+@media (min-width: 700px) {
+  .toggle-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .species-type-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 </style>
 
 </head>
@@ -242,16 +365,35 @@ font-family: inherit;
     </div>
   </div>
 
-  <div class="row">
-    <div style="display:flex;align-items:center;">
-      <div class="toggle-row" style="width:100%">
-        <span>Include plants</span>
-        <label class="toggle"><input type="checkbox" id="showPlants" checked><span class="slider"></span></label>
+  <div class="row toggle-grid">
+    <div class="toggle-card">
+      <div class="toggle-row">
+        <div class="toggle-copy">
+          <span class="toggle-title">Show all species groups</span>
+          <span class="toggle-help">Turn this off to choose specific iNaturalist groups.</span>
+        </div>
+        <label class="toggle"><input type="checkbox" id="showAllSpeciesGroups" checked><span class="slider"></span></label>
+      </div>
+
+      <div class="species-type-panel" id="speciesTypePanel" hidden>
+        <div class="species-type-panel-head">
+          <div>
+            <div class="species-type-panel-title">Choose species groups</div>
+            <div class="species-type-panel-help">All 14 iNaturalist iconic taxa are included, including Other animals, Kelp, diatoms &amp; allies, and Unknown / unassigned.</div>
+          </div>
+          <button class="btn-link" id="selectAllTypesBtn" type="button">Select all</button>
+        </div>
+        <div class="species-type-summary" id="speciesTypeSummary" aria-live="polite"></div>
+        <div class="species-type-list" id="speciesTypeList"></div>
       </div>
     </div>
-    <div style="display:flex;align-items:center;">
-      <div class="toggle-row" style="width:100%">
-        <span>Include captive</span>
+
+    <div class="toggle-card">
+      <div class="toggle-row">
+        <div class="toggle-copy">
+          <span class="toggle-title">Include captive</span>
+          <span class="toggle-help">Off keeps the current verifiable-only filter.</span>
+        </div>
         <label class="toggle"><input type="checkbox" id="showCaptive"><span class="slider"></span></label>
       </div>
     </div>
@@ -301,13 +443,33 @@ font-family: inherit;
 
   /* ── Constants ── */
   var API = 'https://api.inaturalist.org/v1/observations/species_counts';
-  var PLANTAE_ID = 47126;
   var PER_PAGE = 500;
   var RATE_MS = 1100;
   var BATCH = 100;
+  var SPECIES_GROUP_REQUIRED_ERROR = 'Choose at least one species group or turn "Show all species groups" back on.';
   var PLACEHOLDER = 'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><rect width="40" height="40" fill="#1a1a1a"/><text x="20" y="25" text-anchor="middle" font-size="18" fill="#444">?</text></svg>'
   );
+  var ICONIC_TAXA = [
+    { value: 'Plantae', label: 'Plants', badge: 'Plant', meta: 'Plantae' },
+    { value: 'Fungi', label: 'Fungi', badge: 'Fungus', meta: 'Fungi' },
+    { value: 'Aves', label: 'Birds', badge: 'Bird', meta: 'Aves' },
+    { value: 'Mammalia', label: 'Mammals', badge: 'Mammal', meta: 'Mammalia' },
+    { value: 'Reptilia', label: 'Reptiles', badge: 'Reptile', meta: 'Reptilia' },
+    { value: 'Amphibia', label: 'Amphibians', badge: 'Amphibian', meta: 'Amphibia' },
+    { value: 'Actinopterygii', label: 'Fish', badge: 'Fish', meta: 'Actinopterygii' },
+    { value: 'Insecta', label: 'Insects', badge: 'Insect', meta: 'Insecta' },
+    { value: 'Arachnida', label: 'Arachnids', badge: 'Arachnid', meta: 'Arachnida' },
+    { value: 'Mollusca', label: 'Mollusks', badge: 'Mollusk', meta: 'Mollusca' },
+    { value: 'Animalia', label: 'Other animals', badge: 'Other animal', meta: 'Animalia' },
+    { value: 'Protozoa', label: 'Protozoans', badge: 'Protozoan', meta: 'Protozoa' },
+    { value: 'Chromista', label: 'Kelp, diatoms & allies', badge: 'Chromist', meta: 'Chromista' },
+    { value: 'unknown', label: 'Unknown / unassigned', badge: 'Unknown', meta: 'No iconic taxon' }
+  ];
+  var ICONIC_LOOKUP = {};
+  for (var iconicIdx = 0; iconicIdx < ICONIC_TAXA.length; iconicIdx++) {
+    ICONIC_LOOKUP[ICONIC_TAXA[iconicIdx].value] = ICONIC_TAXA[iconicIdx];
+  }
 
   /* ── State ── */
   var allSpecies = [];
@@ -320,7 +482,10 @@ font-family: inherit;
   var $ = function (id) { return document.getElementById(id); };
   var el = {
     lat: $('lat'), lng: $('lng'), radius: $('radius'), quality: $('quality'),
-    startYear: $('startYear'), endYear: $('endYear'), showPlants: $('showPlants'),
+    startYear: $('startYear'), endYear: $('endYear'),
+    showAllSpeciesGroups: $('showAllSpeciesGroups'),
+    speciesTypePanel: $('speciesTypePanel'), speciesTypeList: $('speciesTypeList'),
+    speciesTypeSummary: $('speciesTypeSummary'), selectAllTypesBtn: $('selectAllTypesBtn'),
     showCaptive: $('showCaptive'), nameContains: $('nameContains'),
     searchBtn: $('searchBtn'), cancelBtn: $('cancelBtn'), gpsBtn: $('gpsBtn'),
     statusMsg: $('statusMsg'), errorMsg: $('errorMsg'),
@@ -336,6 +501,8 @@ font-family: inherit;
   var now = new Date();
   el.endYear.value = now.getFullYear();
   el.startYear.value = now.getFullYear() - 5;
+  buildSpeciesTypeOptions();
+  syncSpeciesTypePanel();
 
   /* ── Helpers ── */
   function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
@@ -359,13 +526,80 @@ font-family: inherit;
     else el.cancelBtn.classList.remove('active');
   }
 
-  var ICONIC_MAP = {
-    Plantae:'Plant', Fungi:'Fungus', Aves:'Bird', Mammalia:'Mammal',
-    Reptilia:'Reptile', Amphibia:'Amphibian', Actinopterygii:'Fish',
-    Insecta:'Insect', Arachnida:'Arachnid', Mollusca:'Mollusk',
-    Protozoa:'Protozoan', Chromista:'Chromist', Animalia:'Animal'
-  };
-  function iconicLabel(n) { return ICONIC_MAP[n] || n || '?'; }
+  function iconicInfo(n) {
+    if (ICONIC_LOOKUP[n]) return ICONIC_LOOKUP[n];
+    return { label: n || 'Unknown / unassigned', badge: n || 'Unknown', meta: n || 'No iconic taxon' };
+  }
+  function iconicLabel(n) { return iconicInfo(n).badge; }
+  function iconicName(n) { return iconicInfo(n).label; }
+  function getSelectedIconicTaxa() {
+    var selected = [];
+    var inputs = el.speciesTypeList.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < inputs.length; i++) if (inputs[i].checked) selected.push(inputs[i].value);
+    return selected;
+  }
+  function formatSpeciesGroupSelection(selected, maxNames) {
+    if (!selected || !selected.length) return 'No species groups selected.';
+    if (selected.length === ICONIC_TAXA.length) return 'All ' + ICONIC_TAXA.length + ' species groups selected.';
+    if (selected.length <= maxNames) {
+      var labels = [];
+      for (var i = 0; i < selected.length; i++) labels.push(iconicName(selected[i]));
+      return labels.join(' · ');
+    }
+    return selected.length + ' of ' + ICONIC_TAXA.length + ' species groups selected.';
+  }
+  function updateSpeciesTypeSummary() {
+    var selected = getSelectedIconicTaxa();
+    if (!selected.length) {
+      el.speciesTypeSummary.textContent = 'Choose at least one species group.';
+      el.speciesTypeSummary.classList.add('invalid');
+      return;
+    }
+    el.speciesTypeSummary.textContent = formatSpeciesGroupSelection(selected, 4);
+    el.speciesTypeSummary.classList.remove('invalid');
+    if (el.errorMsg.textContent === SPECIES_GROUP_REQUIRED_ERROR) setError('');
+  }
+  function syncSpeciesTypePanel() {
+    el.speciesTypePanel.hidden = el.showAllSpeciesGroups.checked;
+    if (el.showAllSpeciesGroups.checked && el.errorMsg.textContent === SPECIES_GROUP_REQUIRED_ERROR) setError('');
+    updateSpeciesTypeSummary();
+  }
+  function buildSpeciesTypeOptions() {
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < ICONIC_TAXA.length; i++) {
+      var opt = ICONIC_TAXA[i];
+      var wrap = document.createElement('label');
+      wrap.className = 'species-type-option';
+
+      var input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = opt.value;
+      input.checked = true;
+
+      var text = document.createElement('span');
+      text.className = 'species-type-option-text';
+
+      var title = document.createElement('span');
+      title.className = 'species-type-option-label';
+      title.textContent = opt.label;
+
+      var meta = document.createElement('span');
+      meta.className = 'species-type-option-meta';
+      meta.textContent = opt.meta;
+
+      text.appendChild(title);
+      text.appendChild(meta);
+      wrap.appendChild(input);
+      wrap.appendChild(text);
+      frag.appendChild(wrap);
+    }
+    el.speciesTypeList.appendChild(frag);
+  }
+  function setAllSpeciesTypes(checked) {
+    var inputs = el.speciesTypeList.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < inputs.length; i++) inputs[i].checked = checked;
+    updateSpeciesTypeSummary();
+  }
 
   /* ── GPS ── */
   el.gpsBtn.addEventListener('click', function () {
@@ -395,15 +629,21 @@ font-family: inherit;
     var radius = parseFloat(el.radius.value);
     var sy = parseInt(el.startYear.value, 10);
     var ey = parseInt(el.endYear.value, 10);
+    var selectedIconicTaxa = getSelectedIconicTaxa();
 
     if (isNaN(lat) || lat < -90 || lat > 90) throw new Error('Latitude must be between -90 and 90.');
     if (isNaN(lng) || lng < -180 || lng > 180) throw new Error('Longitude must be between -180 and 180.');
     if (isNaN(radius) || radius <= 0 || radius > 500) throw new Error('Radius must be between 0.1 and 500 km.');
     if (isNaN(sy) || isNaN(ey) || sy < 1) throw new Error('Enter valid start and end years.');
     if (sy > ey) throw new Error('Start year cannot be after end year.');
+    if (!el.showAllSpeciesGroups.checked && !selectedIconicTaxa.length) {
+      throw new Error(SPECIES_GROUP_REQUIRED_ERROR);
+    }
 
     return { lat: lat, lng: lng, radius: radius, startYear: sy, endYear: ey,
-             plants: el.showPlants.checked, captive: el.showCaptive.checked,
+             allSpeciesGroups: el.showAllSpeciesGroups.checked,
+             iconicTaxa: el.showAllSpeciesGroups.checked ? [] : selectedIconicTaxa,
+             captive: el.showCaptive.checked,
              quality: el.quality.value,
              nameFilter: (el.nameContains.value || '').toLowerCase().trim() };
   }
@@ -420,7 +660,9 @@ font-family: inherit;
     p.set('page', page);
     p.set('locale', 'en');
     if (v.quality) p.set('quality_grade', v.quality);
-    if (!v.plants) p.set('without_taxon_id', PLANTAE_ID);
+    if (!v.allSpeciesGroups) {
+      for (var i = 0; i < v.iconicTaxa.length; i++) p.append('iconic_taxa[]', v.iconicTaxa[i]);
+    }
     if (!v.captive) p.set('verifiable', 'true');
     return p;
   }
@@ -432,7 +674,7 @@ font-family: inherit;
     p.set('d1', v.startYear + '-01-01'); p.set('d2', v.endYear + '-12-31');
     p.set('view', 'species'); p.set('place_id', 'any');
     if (v.quality) p.set('quality_grade', v.quality);
-    if (!v.plants) p.set('without_taxon_id', PLANTAE_ID);
+    if (!v.allSpeciesGroups && v.iconicTaxa.length) p.set('iconic_taxa', v.iconicTaxa.join(','));
     if (!v.captive) p.set('verifiable', 'true');
     return 'https://www.inaturalist.org/observations?' + p.toString();
   }
@@ -472,7 +714,7 @@ font-family: inherit;
           name: t.name || '',
           common: t.preferred_common_name || '',
           rank: t.rank || '',
-          iconic: t.iconic_taxon_name || '',
+          iconic: t.iconic_taxon_name || 'unknown',
           count: r.count || 0,
           photo: dp ? (dp.square_url || dp.url || '') : '',
           wiki: t.wikipedia_url || ''
@@ -545,7 +787,8 @@ font-family: inherit;
     for (var i = 0; i < allSpecies.length; i++) totalObs += allSpecies[i].count;
     el.totalSpecies.textContent = allSpecies.length.toLocaleString();
     el.totalObs.textContent = totalObs.toLocaleString();
-    var summary = v.startYear + '-' + v.endYear + ' · ' + v.radius + ' km · (' + v.lat + ', ' + v.lng + ')' + (!v.plants ? ' · no plants' : '');
+    var summary = v.startYear + '-' + v.endYear + ' · ' + v.radius + ' km · (' + v.lat + ', ' + v.lng + ')';
+    if (!v.allSpeciesGroups) summary += ' · groups: ' + formatSpeciesGroupSelection(v.iconicTaxa, 3).replace(/\.$/, '');
     if (v.nameFilter) summary += ' · name contains "' + v.nameFilter + '"';
     el.summaryDetail.textContent = summary;
     el.inatLink.href = buildExploreUrl(v);
@@ -562,7 +805,7 @@ font-family: inherit;
     displayList = allSpecies;
     if (primaryFilter || toolbarFilter) {
       displayList = allSpecies.filter(function (s) {
-        var haystack = [s.common, s.name, s.iconic].join(' ').toLowerCase();
+        var haystack = [s.common, s.name, s.iconic, iconicLabel(s.iconic), iconicName(s.iconic)].join(' ').toLowerCase();
         var matchesPrimary = !primaryFilter || haystack.indexOf(primaryFilter) !== -1;
         var matchesToolbar = !toolbarFilter || haystack.indexOf(toolbarFilter) !== -1;
         return matchesPrimary && matchesToolbar;
@@ -585,6 +828,11 @@ font-family: inherit;
   }
 
   el.sortBy.addEventListener('change', applySortAndFilter);
+  el.showAllSpeciesGroups.addEventListener('change', syncSpeciesTypePanel);
+  el.speciesTypeList.addEventListener('change', function (e) {
+    if (e.target && e.target.type === 'checkbox') updateSpeciesTypeSummary();
+  });
+  el.selectAllTypesBtn.addEventListener('click', function () { setAllSpeciesTypes(true); });
   var filterTimer;
   el.filterText.addEventListener('input', function () {
     clearTimeout(filterTimer);
